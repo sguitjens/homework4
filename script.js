@@ -12,10 +12,11 @@ let questionIndex = 0;
 let answerDiv = document.createElement("div");
 answerDiv.setAttribute("class", "row answer-div");
 answerDiv.setAttribute("style", "display: inline-block");
-let statusDiv = document.createElement("div");
-statusDiv.setAttribute("class", "row text-muted font-italic");
+let statusDiv = document.createElement("div");  // HERE!!!!
+statusDiv.setAttribute("class", "row text-muted font-italic mt-1 border-top"); // top border margin move it over
 let choiceButtons = [];
 let countdown = null;
+let submitButton = document.createElement("input");
 let quizTime = 0;
 
 
@@ -28,15 +29,31 @@ startQuizButton.addEventListener('click', () => {
 });
 
 displayHighScoresButton.addEventListener('click', () => {
-  // TODO: clear out the contents of the answer-div
+  showHighScores();
+})
+
+function showHighScores() {
+  event.preventDefault();
   choiceButtons.forEach(element => {
     console.log('removing element', element);
     element.remove();
   });
-  // TODO: put the initials and score into local storage
+  // TODO: get the initials and scores from local storage
   pageTitle.textContent = 'High Scores'
   startQuizButton.style.display = 'none';
-});
+};
+
+submitButton.addEventListener('click', () => {
+  event.preventDefault();
+  
+  console.log('CLICKED SUBMIT', document.getElementById("initials").value);
+  localStorage.setItem("username", document.getElementById("initials").value);
+  localStorage.setItem("score", quizTime);
+  
+  answerDiv.remove();
+  statusDiv.remove();
+  showHighScores();
+})
 
 function startTimer(t) { // this works
   // this does the second countdown
@@ -47,7 +64,7 @@ function startTimer(t) { // this works
     console.log('TIME', quizTime);
     if(quizTime <= 0) {
       clearInterval(countdown);
-      // TODO: end quiz
+      endQuiz(0);
     }
   }, 1000);
 }
@@ -85,6 +102,7 @@ function displayQuestion(questionIndex) {
       choiceButtons[i].setAttribute("class", "btn btn-info")
       choiceButtons[i].setAttribute("style", "display: block; margin: 3px")
       choiceButtons[i].addEventListener('click', () => {
+        event.preventDefault();
         if(questions[questionIndex].answer === choiceButtons[i].textContent) {
           console.log("this is the correct answer");
           statusDiv.textContent = "CORRECT!";
@@ -99,9 +117,10 @@ function displayQuestion(questionIndex) {
         } else {
           console.log("END QUIZ");
           
-          // TODO: what happens if time goes negative?
+          // TODO: don't let the display show negative time
           quizTime = quizTime < 0 ? 0 : quizTime;
           endQuiz(quizTime);
+          // finalScore = quizTime;
         }
       });
     }
@@ -111,43 +130,31 @@ function displayQuestion(questionIndex) {
   for(let i = 0; i < 4; ++i) {
     choiceButtons[i].textContent = questions[questionIndex].choices[i];
   };
-  // TODO: add styling to all the divs
 }
 
 function endQuiz(score) {
+  let scoreReport = document.createElement("div");
+  let enterInitials = document.createElement("form");
+
+  timeRemainingField.textContent = 0;
   pageTitle.textContent = 'All Done!';
-  // get rid of all the buttons!
+
   choiceButtons.forEach(element => {
     console.log('removing element', element);
     element.remove();
   });
+
   stopTimer();
-  // TODO: create all the scoring elements
-  // your final score is (score) - put inside class answer-div
-  let scoreReport = document.createElement("div");
+  
   scoreReport.textContent = "Your final score is " + score;
-  answerDiv.appendChild(scoreReport)
-  let enterInitials = document.createElement("form");
-  // TODO: set attrubute of form to have action of saving to local storage
-  enterInitials.innerHTML = "\<div class=\"form-group\"\>Enter your initials: <input type=\"text\" name=\"intials: \">\<\/div\>";
-  // TODO: add submit button
-  let submitButton = document.createElement("input");
+  answerDiv.appendChild(scoreReport);
+  
+  enterInitials.innerHTML = "\<div class=\"form-group\"\>Enter your initials: <input id=\"initials\" type=\"text\" name=\"intials: \">\<\/div\>";
   submitButton.setAttribute("type", "submit");
   submitButton.setAttribute("value", "submit");
+  submitButton.setAttribute("class", "btn btn-info");
   enterInitials.appendChild(submitButton);
   answerDiv.appendChild(enterInitials);
-
-/*
-<form action="/action_page.php">
-  First name:<br>
-  <input type="text" name="firstname" value="Mickey">
-  <br>
-  Last name:<br>
-  <input type="text" name="lastname" value="Mouse">
-  <br><br>
-  <input type="submit" value="Submit">
-</form> 
-*/
 }
 
 function timeFormat(milliseconds) {
