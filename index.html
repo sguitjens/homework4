@@ -9,22 +9,32 @@
 </head>
 
 <body>
+  <header class="container-flow">
+    <div class="row justify-content-between">
+      <div class="col-md-2">
+        <button class="btn btn-link col-md-2" id="high-scores">View High Scores</button>
+      </div>
+      <div class="col-md-2">
+      <span>Time Remaining: </span><span id="time-remaining">0</span>
+    </div>
+    </div>
+  </header>
 
   <div class="container">
     <header class="text-center">
-      <h1>Quiz</h1>
+      <h2 id="action-title">Coding Quiz Challenge</h2>
     </header>
 
   
     <div class="row justify-content-around">
       <div class="col col-lg-1">
-        <button type=button class="btn btn-info" id="start-timer">Start Timer</button>
-        <span> Time Remaining: </span><span id="time-remaining">0:00</span>
+        <button type=button class="btn btn-info" id="start-timer">Start Quiz</button>
       </div>
     </div> 
   </div>
 
   <script src="script.js"></script> 
+  <script src="questions.js"></script> 
 </body>
 
 </html>
