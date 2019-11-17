@@ -7,7 +7,9 @@ let displayHighScoresButton = document.getElementById('high-scores')
 let timeDisplayInterval = 1000 // 1s in ms
 let maxTimeout = 10000; // in ms
 let questionDiv = document.createElement("div") // need to create this as a child of the current page
+let questionIndex = 0;
 // let isAnswered = false;
+
 /*
       var newDiv = document.createElement("div");
 
@@ -17,7 +19,11 @@ let questionDiv = document.createElement("div") // need to create this as a chil
       // Now we use the ".appendChild" method to combine the two divs together on the page.
       targetDiv.appendChild(newDiv);
 */
-let answerDiv = ''; // need to create this as a child of the current page
+let answerDiv = document.createElement("div");
+answerDiv.setAttribute("style", "color:red; border: 1px solid blue;");
+let choiceButtons = [];
+
+
 
 startTimerButton.addEventListener('click', () => {
   event.preventDefault();
@@ -48,68 +54,96 @@ function addTime(sec) { // untested
 }
 
 function askQuestions() {
-  let result = false;
-  questions.forEach(question => {
-    displayQuestion(question);
-  })
-  console.log('result', result);
-  return result;
+  console.log('askQuestions function, questionIndex =', questionIndex);
+  if(questionIndex === questions.length - 1) {
+    console.log("FINISHED");
+    return;
+  }
+  displayQuestion(questionIndex);
 };
 
+      // // clean up answers
+      // let test = answerDiv.children;
+      // console.log(test);
+      // for(let i = 0; i < test.length; ++i) {
+      //   console.log('removing', test[i]);
+      //   test[i].remove();
+      // }
+      // // test.forEach(function(child) {
+      // //   child.remove();
+      // // });
 
-function displayQuestion(question) {
-  // let result = false;
-  isAnswered = false;
-  let newDiv = document.createElement("div");
-  pageTitle.textContent = question.title;
-  pageTitle.appendChild(newDiv);
-  question.choices.forEach(choice => {
-    let choiceButton = document.createElement("button");
-    choiceButton.textContent = choice;
-    newDiv.appendChild(choiceButton);
-    // choiceButton.addEventListener('click', () => {
-    //   if(question.answer === choiceButton.textContent) {
-    //     console.log("this is the correct answer");
+      // choiceButtons[0] = document.createElement("button");
+// choiceButtons[0].setAttribute("style", "background-color: darkblue; color: white");
+// answerDiv.appendChild(choiceButtons[0]);
+// choiceButton.textContent = choice;
 
-    //   } else {
-    //     console.log("WRONG!");
-    //     result = false;
-    //   }
-    // });
-  });
+
+function displayQuestion(questionIndex) {
+  pageTitle.textContent = questions[questionIndex].title;
+  pageTitle.appendChild(answerDiv);
+  // the first time through we create the choice buttons with nothing in them
+  console.log('choice buttons length', choiceButtons.length);
+  if(choiceButtons.length === 0) {
+    for(let i = 0; i < 4; ++i){
+      choiceButtons[i] = document.createElement("button");
+      answerDiv.appendChild(choiceButtons[i]);
+      choiceButtons[i].setAttribute("style", "background-color: darkblue; color: white");
+      choiceButtons[i].addEventListener('click', () => {
+        if(questions[questionIndex].answer === choiceButtons[i].textContent) {
+          console.log("this is the correct answer");
+        } else {
+          console.log("WRONG!");
+        }
+        questionIndex ++;
+        if(questionIndex < questions.length) {
+          displayQuestion(questionIndex);
+        } else {
+          console.log("END QUIZ");
+          // TODO; call endQuiz function
+        }
+      });
+    }
+  }
+  console.log('choice buttons array', choiceButtons);
+  for(let i = 0; i < 4; ++i) {
+    choiceButtons[i].textContent = questions[questionIndex].choices[i];
+  };
+
+
+  // questions[questionIndex].choices.forEach(choice => {
+  //   choiceButton.textContent = choice;
+  //   choiceButton.addEventListener('click', () => {
+  //     if(questions[questionIndex].answer === choiceButton.textContent) {
+  //       console.log("this is the correct answer");
+  //     } else {
+  //       console.log("WRONG!");
+  //     }
+  //     questionIndex ++;
+  //     if(questionIndex < questions.length) {
+  //       displayQuestion(questionIndex);
+  //     } else {
+  //       console.log("END QUIZ");
+  //       // TODO; call endQuiz function
+  //     }
+  //   });
+  // });
 }
 
-function answerQuestion() {
-
-  //return true or false
+function endQuiz() {
+  pageTitle.textContent = 'All Done!';
+  let newDiv = document.createElement("div");
+  document.appendChild(newDiv);
+  newDiv
 }
 
 displayHighScoresButton.addEventListener('click', () => {
   pageTitle.textContent = 'High Scores'
   startTimerButton.style.display = 'none';
-  
 });
-
-function newFunction() {
-  return document.getElementById('action-title');
-}
-
-// function quizRunner() {
-//   quizQuestions.questions.forEach(question) {
-//     answerDiv = clearPreviousAnswer;
-//     questionDiv = question.title;
-
-//   }
-// }
 
 function timeFormat(milliseconds) {
   let min = Math.floor(milliseconds / 60000);
   let sec = Math.floor(milliseconds - min * 60000) / 1000
   return min + ':' + sec;
 }
-
-
-
-// NOTES
-// 60000ms/minute
-// 
