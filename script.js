@@ -38,8 +38,6 @@ displayHighScoresButton.addEventListener('click', () => {
 
 submitButton.addEventListener('click', () => {
   event.preventDefault();
-  
-  // TODO: do some validation on the scores before putting in storage
   let userScore = document.getElementById("initials").value + " - " + finalScore;
   if(!localStorage.getItem('scoreArray')) {
     let scores = [userScore];
@@ -49,7 +47,7 @@ submitButton.addEventListener('click', () => {
     scores.push(userScore);
     localStorage.setItem('scoreArray', JSON.stringify(scores));
   }
-  
+
   answerDiv.remove();
   statusDiv.remove();
   highScoresElements();
@@ -65,21 +63,23 @@ function highScoresElements() {
 
   pageTitle.textContent = 'High Scores'
   startQuizButton.style.visibility = "hidden";
-  if(localStorage.getItem('scoreArray')) {
-  };
-  
   // create the score list elements
   let scoreList = document.createElement("ol");
   scoreList.setAttribute("id", "scores-list");
   quizArea.appendChild(scoreList);
   let scores = JSON.parse(localStorage.getItem('scoreArray'));
+  console.log("before", scores);
+    scores.sort((a, b) => {
+      return parseInt(b.slice(b.length - 2).trim()) - parseInt(a.slice(a.length - 2).trim());
+  });
+  console.log("after", scores);
   // list the scores
-  // TODO: sort the scores
   scores.forEach((item) => {
     let userScore = document.createElement("li");
     userScore.textContent = item;
     scoreList.appendChild(userScore);
   });
+  
   let buttonDiv = document.createElement("div");
   buttonDiv.setAttribute("id", "score-list-buttons")
   let btn = document.createElement("button");
@@ -103,26 +103,18 @@ function highScoresElements() {
   btn.addEventListener('click', () => {
     localStorage.clear();
     scoreList.remove();
-    // localStorage.removeItem("scoreArray");
   });
   buttonDiv.appendChild(btn);
   quizArea.appendChild(buttonDiv);
 };
 
-function updateScoreList() {
-  for(let i = 0; i < scoreArray.length; ++i) {
-    let userScore = document.createElement("li");
-    userScore.textContent = scoreArray[i];
-    scoreList.appendChild(userScore);
-  };
-};
-
-function putInLocalStorage(initials, score) {
-  if(!localStorage.getItem('scoreArray')) {
-    localStorage.addItem('scoreArray', []);
-  };
-  scoreArray.push(initials + " - " + score);
-};
+// function updateScoreList() {
+//   for(let i = 0; i < scoreArray.length; ++i) {
+//     let userScore = document.createElement("li");
+//     userScore.textContent = scoreArray[i];
+//     scoreList.appendChild(userScore);
+//   };
+// };
 
 function startTimer(t) { // this works
   // this does the second countdown
