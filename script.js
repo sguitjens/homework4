@@ -70,6 +70,7 @@ function highScoresElements() {
   let scores = JSON.parse(localStorage.getItem('scoreArray'));
   console.log("before", scores);
     scores.sort((a, b) => {
+      console.log("TEST");
       return parseInt(b.slice(b.length - 2).trim()) - parseInt(a.slice(a.length - 2).trim());
   });
   console.log("after", scores);
