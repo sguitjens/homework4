@@ -12,13 +12,13 @@ let questionIndex = 0;
 let answerDiv = document.createElement("div");
 answerDiv.setAttribute("class", "row answer-div");
 answerDiv.setAttribute("style", "display: inline-block");
-let statusDiv = document.createElement("div");  // HERE!!!!
-statusDiv.setAttribute("class", "row text-muted font-italic mt-1 border-top"); // top border margin move it over
+let statusDiv = document.createElement("div");
+statusDiv.setAttribute("class", "row text-muted font-italic mt-1 border-top");
 let choiceButtons = [];
 let countdown = null;
 let submitButton = document.createElement("input");
 let quizTime = 0;
-let scoreArray = [];
+let finalScore = 0;
 
 
 
@@ -32,38 +32,53 @@ startQuizButton.addEventListener('click', () => {
 displayHighScoresButton.addEventListener('click', () => {
   event.preventDefault();
   if(pageTitle.textContent != 'High Scores') {
-    generateHighScores();
+    highScoresElements();
   }
-})
+});
 
-function generateHighScores() {
+submitButton.addEventListener('click', () => {
+  event.preventDefault();
+  
+  // TODO: do some validation on the scores before putting in storage
+  let userScore = document.getElementById("initials").value + " - " + finalScore;
+  if(!localStorage.getItem('scoreArray')) {
+    let scores = [userScore];
+    localStorage.setItem('scoreArray', JSON.stringify(scores));
+  } else {
+    let scores = JSON.parse(localStorage.getItem('scoreArray'));
+    scores.push(userScore);
+    localStorage.setItem('scoreArray', JSON.stringify(scores));
+  }
+  
+  answerDiv.remove();
+  statusDiv.remove();
+  highScoresElements();
+});
+
+function highScoresElements() {
   event.preventDefault();
   if (choiceButtons) {
     choiceButtons.forEach(element => {
-    console.log('removing element', element);
     element.remove();
     });
-  }
+  };
 
   pageTitle.textContent = 'High Scores'
   startQuizButton.style.display = 'none';
-  // TODO: get the initials and scores from local storage
-  // TODO: if there is an array in local storage called "highscores", then add to it
   if(localStorage.getItem('scoreArray')) {
-    scoreArray = localStorage.getItem("scoreArray");
-    console.log("GOT THE ARRAY FROM LOCAL STORAGE")
-  }
-  console.log('scoreArray = ', scoreArray);
+  };
   
   // create the score list elements
   let scoreList = document.createElement("ol");
   quizArea.appendChild(scoreList);
-  for(let i = 0; i < scoreArray.length; ++i) {
+  let scores = JSON.parse(localStorage.getItem('scoreArray'));
+  // list the scores
+  // TODO: sort the scores
+  scores.forEach((item) => {
     let userScore = document.createElement("li");
-    userScore.textContent = scoreArray[i];
+    userScore.textContent = item;
     scoreList.appendChild(userScore);
-    console.log('LIST', scoreArray[i])
-  }
+  })
   let buttonDiv = document.createElement("div");
   let btn = document.createElement("button");
   btn.textContent = "Go Back"
@@ -73,7 +88,7 @@ function generateHighScores() {
     // reset and start game again
     // remove all the children of qiuzArea;
     // reset score
-  })
+  });
   buttonDiv.appendChild(btn);
   btn = document.createElement("button");
   btn.textContent = "Clear High Scores"
@@ -81,30 +96,25 @@ function generateHighScores() {
   btn.setAttribute("style", "margin: 3px");
   btn.addEventListener('click', () => {
     localStorage.clear();
-  })
+  });
   buttonDiv.appendChild(btn);
   quizArea.appendChild(buttonDiv);
+};
+
+function updateScoreList() {
+  for(let i = 0; i < scoreArray.length; ++i) {
+    let userScore = document.createElement("li");
+    userScore.textContent = scoreArray[i];
+    scoreList.appendChild(userScore);
+  };
 };
 
 function putInLocalStorage(initials, score) {
   if(!localStorage.getItem('scoreArray')) {
     localStorage.addItem('scoreArray', []);
-  }
-  scoreArray.append(initials + " - " + score);
-  console.log('LOCAL STORAGE = ', localStorage.getItem('scoreArray'))
-}
-
-submitButton.addEventListener('click', () => {
-  event.preventDefault();
-  
-  console.log('CLICKED SUBMIT', document.getElementById("initials").value);
-  localStorage.setItem("scoreArray", document.getElementById("initials").value + " - " + localStorage.setItem("score", quizTime));
-  // localStorage.setItem("score", quizTime);
-  
-  answerDiv.remove();
-  statusDiv.remove();
-  generateHighScores();
-})
+  };
+  scoreArray.push(initials + " - " + score);
+};
 
 function startTimer(t) { // this works
   // this does the second countdown
@@ -112,31 +122,27 @@ function startTimer(t) { // this works
   countdown = setInterval(function() {
     quizTime -= 1;
     timeRemainingField.textContent = quizTime;
-    console.log('TIME', quizTime);
     if(quizTime <= 0) {
       clearInterval(countdown);
       endQuiz(0);
-    }
+    };
   }, 1000);
-}
+};
 
 function stopTimer() { 
   clearInterval(countdown);
-    // clearTimeout(myVar);
   // TODO: might need to also zero out the timer
-}
+};
 
 function dockTime(sec) {
   quizTime -= sec;
-}
+};
 
 function askQuestions() {
-  console.log('askQuestions function, questionIndex =', questionIndex);
   startQuizButton.style.display = 'none';
   if(questionIndex === questions.length - 1) {
-    console.log("FINISHED");
     return;
-  }
+  };
   displayQuestion(questionIndex);
 };
 
@@ -145,7 +151,6 @@ function displayQuestion(questionIndex) {
   quizArea.appendChild(answerDiv);
   quizArea.appendChild(statusDiv);
   // the first time through, create the choice buttons with no text in them
-  console.log('choice buttons length', choiceButtons.length);
   if(choiceButtons.length === 0) {
     for(let i = 0; i < 4; ++i){
       choiceButtons[i] = document.createElement("button");
@@ -155,29 +160,24 @@ function displayQuestion(questionIndex) {
       choiceButtons[i].addEventListener('click', () => {
         event.preventDefault();
         if(questions[questionIndex].answer === choiceButtons[i].textContent) {
-          console.log("this is the correct answer");
           statusDiv.textContent = "CORRECT!";
         } else {
-          console.log("WRONG!");
           statusDiv.textContent = "WRONG!";
           dockTime(10);
-        }
+        };
         questionIndex ++;
         if(questionIndex < questions.length) {
           displayQuestion(questionIndex);
         } else {
-          console.log("END QUIZ");
           
-          // TODO: don't let the display show negative time
           quizTime = quizTime < 0 ? 0 : quizTime;
           endQuiz(quizTime);
-          // finalScore = quizTime;
-        }
+          finalScore = quizTime;
+        };
       });
-    }
-  }
+    };
+  };
   // add the text to the buttons
-  console.log('choice buttons array', choiceButtons);
   for(let i = 0; i < 4; ++i) {
     choiceButtons[i].textContent = questions[questionIndex].choices[i];
   };
@@ -187,15 +187,13 @@ function endQuiz(score) {
   let scoreReport = document.createElement("div");
   let enterInitials = document.createElement("form");
 
+  stopTimer();
   timeRemainingField.textContent = 0;
   pageTitle.textContent = 'All Done!';
 
   choiceButtons.forEach(element => {
-    console.log('removing element', element);
     element.remove();
   });
-
-  stopTimer();
   
   scoreReport.textContent = "Your final score is " + score;
   answerDiv.appendChild(scoreReport);
@@ -203,7 +201,7 @@ function endQuiz(score) {
   enterInitials.innerHTML = "\<div class=\"form-group\"\>Enter your initials: <input id=\"initials\" type=\"text\" name=\"intials: \">\<\/div\>";
   submitButton.setAttribute("type", "submit");
   submitButton.setAttribute("value", "submit");
-  submitButton.setAttribute("class", "btn btn-info");
+  submitButton.setAttribute("class", "btn btn-success");
   enterInitials.appendChild(submitButton);
   answerDiv.appendChild(enterInitials);
 }
