@@ -79,7 +79,7 @@ function highScoresElements() {
     let userScore = document.createElement("li");
     userScore.textContent = item;
     scoreList.appendChild(userScore);
-  })
+  });
   let buttonDiv = document.createElement("div");
   buttonDiv.setAttribute("id", "score-list-buttons")
   let btn = document.createElement("button");
@@ -88,8 +88,9 @@ function highScoresElements() {
   btn.setAttribute("style", "display: block; margin: 3px");
   btn.addEventListener('click', () => {
     let list = document.getElementById("scores-list");
-    console.log(list);
-    list.remove();
+    if(list) {
+      list.remove();
+    }
     let scoreButtons = document.getElementById("score-list-buttons");
     scoreButtons.remove();
     resetGame();
@@ -101,6 +102,8 @@ function highScoresElements() {
   btn.setAttribute("style", "margin: 3px");
   btn.addEventListener('click', () => {
     localStorage.clear();
+    scoreList.remove();
+    // localStorage.removeItem("scoreArray");
   });
   buttonDiv.appendChild(btn);
   quizArea.appendChild(buttonDiv);
@@ -144,9 +147,7 @@ function dockTime(sec) {
 };
 
 function resetGame() {
-  startQuizButton.style.visibility = "visible"
-  pageTitle.textContent = "Coding Quiz Challenge"
-  questionIndex = 0;
+  location.reload();
 }
 
 function askQuestions() {
