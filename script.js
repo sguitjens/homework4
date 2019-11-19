@@ -43,7 +43,7 @@ submitButton.addEventListener('click', () => {
     let scores = [userScore];
     localStorage.setItem('scoreArray', JSON.stringify(scores));
   } else {
-    let scores = JSON.parse(localStorage.getItem('scoreArray'));
+    let scores = JSON.parse(localStorage.getItem("scoreArray"));
     scores.push(userScore);
     localStorage.setItem('scoreArray', JSON.stringify(scores));
   }
@@ -67,13 +67,10 @@ function highScoresElements() {
   let scoreList = document.createElement("ol");
   scoreList.setAttribute("id", "scores-list");
   quizArea.appendChild(scoreList);
-  let scores = JSON.parse(localStorage.getItem('scoreArray'));
-  console.log("before", scores);
+  let scores = JSON.parse(localStorage.getItem("scoreArray"));
     scores.sort((a, b) => {
-      console.log("TEST");
       return parseInt(b.slice(b.length - 2).trim()) - parseInt(a.slice(a.length - 2).trim());
   });
-  console.log("after", scores);
   // list the scores
   scores.forEach((item) => {
     let userScore = document.createElement("li");
