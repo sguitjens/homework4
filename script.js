@@ -64,12 +64,13 @@ function highScoresElements() {
   };
 
   pageTitle.textContent = 'High Scores'
-  startQuizButton.style.display = 'none';
+  startQuizButton.style.visibility = "hidden";
   if(localStorage.getItem('scoreArray')) {
   };
   
   // create the score list elements
   let scoreList = document.createElement("ol");
+  scoreList.setAttribute("id", "scores-list");
   quizArea.appendChild(scoreList);
   let scores = JSON.parse(localStorage.getItem('scoreArray'));
   // list the scores
@@ -80,14 +81,18 @@ function highScoresElements() {
     scoreList.appendChild(userScore);
   })
   let buttonDiv = document.createElement("div");
+  buttonDiv.setAttribute("id", "score-list-buttons")
   let btn = document.createElement("button");
   btn.textContent = "Go Back"
   btn.setAttribute("class", "btn btn-info");
   btn.setAttribute("style", "display: block; margin: 3px");
   btn.addEventListener('click', () => {
-    // reset and start game again
-    // remove all the children of qiuzArea;
-    // reset score
+    let list = document.getElementById("scores-list");
+    console.log(list);
+    list.remove();
+    let scoreButtons = document.getElementById("score-list-buttons");
+    scoreButtons.remove();
+    resetGame();
   });
   buttonDiv.appendChild(btn);
   btn = document.createElement("button");
@@ -138,8 +143,14 @@ function dockTime(sec) {
   quizTime -= sec;
 };
 
+function resetGame() {
+  startQuizButton.style.visibility = "visible"
+  pageTitle.textContent = "Coding Quiz Challenge"
+  questionIndex = 0;
+}
+
 function askQuestions() {
-  startQuizButton.style.display = 'none';
+  startQuizButton.style.visibility = "hidden";
   if(questionIndex === questions.length - 1) {
     return;
   };
