@@ -11,7 +11,7 @@ This is a timer-based code quiz with multiple-choice questions;.
 * The timer will stop when all questions have been answered or the timer reaches 0.
 
 * After the game ends, you can save initials and score to a highscores view, and these values are retained in local storage.
-![Code Quiz enter initials page](./screenshots/start-quiz.png "Entter your initials")
+![Code Quiz enter initials page](./screenshots/enter-initials.png "Entter your initials")
 
 * In the High Scores page, you have the options to clear the high scores, and do the quiz again.
 ![Code Quiz high scores page](./screenshots/high-scores.png "Clear high scores or play again")
